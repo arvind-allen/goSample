@@ -10,7 +10,6 @@ import (
 	"github.com/go-chi/cors"
 )
 
-
 func main() {
 	fmt.Println("Start")
 
@@ -23,7 +22,7 @@ func main() {
 	}
 
 	router := chi.NewRouter()
-
+	
 	router.Use(cors.Handler(cors.Options{
 		AllowedOrigins:   []string{"https://*", "http://*"},
 		AllowedMethods:   []string{"GET", "POST", "PUT", "DELETE", "OPTIONS"},
@@ -32,6 +31,13 @@ func main() {
 		AllowCredentials: false,
 		MaxAge:           300,
 	}))
+
+	v1Router := chi.NewRouter()
+
+	v1Router.Get("/healthz", handlerReadiness)
+	v1Router.Get("/err", handlerErr)
+
+	router.Mount("/v1", v1Router)
 	
 	srv := &http.Server{
 		Handler: router,
